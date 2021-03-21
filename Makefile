@@ -5,14 +5,14 @@ COMMON_CFLAGS += -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type \
                     -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wno-format-security\
                     -Wcast-align -Wcast-qual -Wconversion -Wredundant-decls -Wnon-virtual-dtor
 
-SRCS := src/App.cpp src/ecdh.cpp
+SRCS := src/App.cpp src/ecdh.cpp src/shamir.cpp src/aes.cpp src/mask.cpp
 
-App_Include_Paths := -I./include
+App_Include_Paths := -I./include -lcryptopp
 
 App_C_Flags := -fPIC -Wno-attributes $(App_Include_Paths) -DNDEBUG
 
 App_Cpp_Flags := -std=c++11 $(App_C_Flags) -mavx2 -mfma
-App_Link_Flags := -lssl -lcrypto
+App_Link_Flags := -lcryptopp
 
 OBJS := $(SRCS:.cpp=.o)
 
