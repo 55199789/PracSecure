@@ -10,7 +10,7 @@ struct Client {
     std::vector<Bytes> shares_s, shares_b, e;
     std::vector<CryptoPP::SecByteBlock*> ckeys, skeys;
     std::vector<DATATYPE> x, pu, y;
-    std::vector<std::vector<DATATYPE> > puv;
+    // std::vector<std::vector<DATATYPE> > puv;
 };
 
 #endif

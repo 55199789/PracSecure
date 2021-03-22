@@ -27,7 +27,7 @@ static void bytes2word(const Bytes &dst, \
     x |= dst[3];
 }
 
-double gettime(const char *name="\0", int is_end=false) {
+double gettime(int is_end=false) {
     static std::chrono::time_point<std::chrono::high_resolution_clock> \
                             begin_time, end_time;
     static bool begin_done = false;
@@ -39,8 +39,8 @@ double gettime(const char *name="\0", int is_end=false) {
     } else {
         end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end_time - begin_time;
-            printf("%s Time elapsed: %fs\n\n", name, elapsed.count());
-        return elapsed.count();
+            // printf("%s Time elapsed: %fs\n\n", name, elapsed.count());
+        return elapsed.count()*1000;
     }
     return 0;
 }
@@ -48,13 +48,20 @@ double gettime(const char *name="\0", int is_end=false) {
 
 int main(int argc, char *argv[]) {
     if(argc!=4) {
-        printf("Usage: ./app clientNum dim dropRate\n");
+        printf("Usage: ./app clientNum vectorDim \
+            survRate\n");
         return 0;
     }
     const int clientNum = atoi(argv[1]);
     const int dim = atoi(argv[2]);
     const double dropRate = atof(argv[3]);
+    // const int threshold = clientNum / 2 + 1;
     const int threshold = 2*clientNum / 3 + 1;
+    double t_adv[clientNum] = {0}, \
+            t_shareKeys[clientNum] = {0}, \
+            t_masks[clientNum] = {0}, \
+            t_unmasking[clientNum] = {0};
+    double T_shareKeys, T_masks, T_unmasking;
     Client *clients = new Client[clientNum];
     std::vector<DATATYPE> final_x(dim, 0);
     CryptoPP::AutoSeededRandomPool rng;
@@ -68,14 +75,17 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i=0;i<clientNum;i++) {
+        gettime();
         ecdh_getKeyPairs(clients[i].ckeyPairs);
         ecdh_getKeyPairs(clients[i].skeyPairs);
+        t_adv[i] = gettime(1);
     }
     printf("AdvertiseKeys completed!\n");
 
     printf("Threshold: %d, Total number: %d\n", \
                 threshold, clientNum);
     for(int i=0;i<clientNum;i++) {
+        gettime();
         auto &it = clients[i];
         // Generate b_u
         it.bu = rng.GenerateWord32();
@@ -92,15 +102,15 @@ int main(int argc, char *argv[]) {
         // Compute e_{u, v}
         it.ckeys.resize(clientNum);
         it.e.resize(clientNum);
+        const size_t s_len = sizeof(int)*2 + \
+                it.shares_s[0].size() + \
+                it.shares_b[0].size();
+        byte *in = new byte[s_len];
+        byte *out = new byte[s_len];
         for(int j=0;j<clientNum;j++)
             if(i!=j) {
                 it.ckeys[j] = key_agreement(it.ckeyPairs.privKey, \
                     clients[j].ckeyPairs.pubKey);
-                const size_t s_len = sizeof(int)*2 + \
-                        it.shares_s[j].size() + \
-                        it.shares_b[j].size();
-                byte *in = new byte[s_len];
-                byte *out = new byte[s_len];
                 memcpy(in, &i, sizeof(int));
                 memcpy(in+sizeof(int), &j, sizeof(int));
                 memcpy(in+sizeof(int)*2, it.shares_s[j].data(), \
@@ -110,11 +120,18 @@ int main(int argc, char *argv[]) {
                         it.shares_b[j].size());
                 AES_GCM_en(*it.ckeys[j], in, out, s_len);
                 it.e[j].assign(out, out + s_len);
-                delete[] out;
-                delete[] in;
             }
+            delete[] out;
+            delete[] in;
+        t_shareKeys[i] = gettime(1);
     }
+    {
+    gettime();
+    std::vector<std::vector<Bytes> > e_server(clientNum);
+    for(int i=0;i<clientNum;i++)e_server[i] = clients[i].e;
+    T_shareKeys = gettime(1);
     printf("ShareKeys completed!\n");
+    }
 
     std::vector<int> ids(clientNum);
     std::iota(ids.begin(), ids.end(), 0);
@@ -135,65 +152,73 @@ int main(int argc, char *argv[]) {
     }
 
     for(auto i:survival) {
+        gettime();
         auto &it = clients[i];
         it.skeys.resize(clientNum);
         it.pu.resize(dim);
         it.y.resize(dim);
-        it.puv.resize(clientNum);
         Bytes buBytes(4);
         word2bytes(it.bu, buBytes);
         CryptoPP::SecByteBlock bu_sec((byte*)buBytes.data(), \
                     sizeof(it.bu));
         generateVectorWithSeed(it.pu, bu_sec);
-        for(int k=0;k<dim;k++) {
+        for(int k=0;k<dim;k++)
             it.y[k] = it.x[k] + it.pu[k];
-            if(it.y[k]<0) printf("Overflow!\n");
-        }
+        std::vector<DATATYPE> puv(dim);
         for(int j=0;j<clientNum;j++)
             if(i!=j) {
                 it.skeys[j] = key_agreement(it.skeyPairs.privKey, \
                         clients[j].skeyPairs.pubKey);
-                it.puv[j].resize(dim);
-                generateVectorWithSeed(it.puv[j], \
+                memset(puv.data(), 0, sizeof(DATATYPE)*dim);
+                generateVectorWithSeed(puv, \
                                     *it.skeys[j], \
                                     i<j?-1:1);
                 for(int k=0;k<dim;k++)
-                    it.y[k] += it.puv[j][k];
+                    it.y[k] += puv[k];
             }
+        t_masks[i] = gettime(1);
     }
+    {
+    gettime();
+    std::vector<std::vector<DATATYPE> >  y_server(clientNum);
+    for(int i=0;i<clientNum;i++) y_server[i] = clients[i].y;
+    T_masks = gettime(1);
     printf("MaskedInputCollection completed!\n");
-
+    }
+    
     for(int i=0;i<clientNum;i++) {
+        gettime();
         auto &it = clients[i];
         for(int j=0;j<clientNum;j++)
             if(i!=j) {
                 CryptoPP::SecByteBlock *ckey = \
-                    key_agreement(it.ckeyPairs.privKey, \
-                    clients[j].ckeyPairs.pubKey);
+                    it.ckeys[j];
                 const size_t s_len = sizeof(int)*2 + \
                         it.shares_s[j].size() + \
                         it.shares_b[j].size();
-                byte *out = new byte[s_len];
+                byte out[s_len];
                 AES_GCM_de(*ckey, clients[j].e[i].data(), \
                     out, s_len);
                 int v_, u_;
                 memcpy(&v_, out, sizeof(int));
-                memcpy(&u_, out+sizeof(int), sizeof(int));    
+                memcpy(&u_, out + sizeof(int), sizeof(int));    
                 if(i!=u_ || j!=v_) {
                     printf("Error!!!\n");
                     return 0;
                 }            
             }
+        t_unmasking[i] = gettime(1);
     }
     printf("Unmasking validation completed!\n");
 
+    gettime();
     std::vector<DATATYPE> z(dim, 0);
     for(auto i:survival) {
         auto &it = clients[i];
         std::vector<Bytes> shares(survNum, Bytes(4));
         for(int j=0;j<survNum;j++) 
-            shares[j] = it.shares_b[j];
-            // shares[j] = std::move(it.shares_b[j]);
+            shares[j] = std::move(it.shares_b[j]);
+            // shares[j] = it.shares_b[j];
         CryptoPP::SecByteBlock recSecret = SecretRecoverBytes(shares, \
                             threshold);
         std::vector<DATATYPE> pu(dim);
@@ -201,8 +226,10 @@ int main(int argc, char *argv[]) {
         for(int j=0;j<dim;j++) 
             z[j] += it.y[j] - pu[j];
     }
+    T_unmasking = gettime(1);
     printf("Recovering pu completed!\n");
 
+    gettime();
     for(auto i:drops) {
         auto &it = clients[i];
         std::vector<Bytes> shares(survNum);
@@ -221,6 +248,7 @@ int main(int argc, char *argv[]) {
                 z[k] += pvu[j][k];
         }
     }
+    T_unmasking += gettime(1);
     printf("Aggregation completed!\n");
 
     for(int k=0;k<dim;k++){
@@ -231,4 +259,26 @@ int main(int argc, char *argv[]) {
         }
     }
     printf("Testing passed!\n");
+
+    double t_shareKeys_avg = 0, \
+            t_adv_avg = 0, \
+            t_masks_avg = 0, \
+            t_unmasking_avg = 0;
+    for(auto i:t_adv) t_adv_avg += i;
+    t_adv_avg /= clientNum;
+    for(auto i:t_shareKeys) t_shareKeys_avg += i;
+    t_shareKeys_avg /= clientNum;
+    for(auto i:t_masks) t_masks_avg += i;
+    t_masks_avg /= survNum;
+    for(auto i:t_unmasking) t_unmasking_avg += i;
+    t_unmasking_avg /= clientNum;
+
+    printf("\t AdvertiseKeys\t ShareKyes\t Masking\t Unmasking\t Total\n");
+    printf("Client\t%fms\t%fms\t%fms\t%fms\t%fms\n", t_adv_avg, \
+            t_shareKeys_avg, t_masks_avg, t_unmasking_avg, \
+            t_adv_avg + t_shareKeys_avg + 
+            t_masks_avg + t_unmasking_avg);
+    printf("Server\t%fms\t%fms\t%fms\t%fms\t%fms\n", 1.0, T_shareKeys, \
+            T_masks, T_unmasking, \
+            T_shareKeys + T_masks + T_unmasking + 1.0);
 }
