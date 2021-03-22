@@ -4,6 +4,7 @@
 #define Bytes std::vector<byte>
 std::vector<Bytes> SecretShareBytes(const Bytes& secret, \
                                 int threshold, int nShares);
-Bytes SecretRecoverBytes(std::vector<Bytes>& shares, \
+CryptoPP::SecByteBlock SecretRecoverBytes(\
+                        std::vector<Bytes>& shares, \
                         int threshold);
 #endif

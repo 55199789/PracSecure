@@ -1,10 +1,9 @@
 #ifndef MASK__Z
 #define MASK__Z
 #include "client.h"
-
-void generateVectorWithSeed(std::vector<DATATYPE>&, \
-                        const CryptoPP::word32&);
+#include <crypto++/aes.h>
+#include <crypto++/modes.h>
 void generateVectorWithSeed(std::vector<DATATYPE>& vec, \
                         const CryptoPP::SecByteBlock &seed, \
-                        const int delta) {
+                        const int delta = 1);
 #endif

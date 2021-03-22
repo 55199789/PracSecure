@@ -34,13 +34,13 @@ vector<Bytes> SecretShareBytes(const Bytes& secret, \
     return move(ret);
 }
 
-Bytes SecretRecoverBytes(vector<Bytes>& shares, int threshold) {
+SecByteBlock SecretRecoverBytes(vector<Bytes>& shares, int threshold) {
     if(threshold>shares.size()) {
         printf("Partial secret too few... Failed to recover!\n");
-        return Bytes();
+        return SecByteBlock(0);
     }
     ostringstream out;
-    SecretRecovery recovery( threshold, new FileSink(out));
+    SecretRecovery recovery(threshold, new FileSink(out));
 
     SecByteBlock channel(4);
     for (int i = 0; i < threshold; i++) {
@@ -54,5 +54,5 @@ Bytes SecretRecoverBytes(vector<Bytes>& shares, int threshold) {
         arraySource.PumpAll();
     }
     const auto & secret = out.str();
-    return Bytes(secret.begin(), secret.begin() + secret.size());
+    return move(SecByteBlock((byte*)secret.data(), secret.size()));
 }
