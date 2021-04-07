@@ -48,8 +48,7 @@ double gettime(int is_end=false) {
 
 int main(int argc, char *argv[]) {
     if(argc!=4) {
-        printf("Usage: ./app clientNum vectorDim \
-            survRate\n");
+        printf("Usage: ./app clientNum vectorDim survRate\n");
         return 0;
     }
     const int clientNum = atoi(argv[1]);
