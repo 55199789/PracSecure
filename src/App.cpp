@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <algorithm> 
 #include <chrono>
 #include <crypto++/eccrypto.h>
@@ -28,19 +29,22 @@ static void bytes2word(const Bytes &dst, \
 }
 
 double gettime(int is_end=false) {
-    static std::chrono::time_point<std::chrono::high_resolution_clock> \
-                            begin_time, end_time;
+    // static std::chrono::time_point<std::chrono::high_resolution_clock> 
+    static std::clock_t
+            begin_time, end_time;
     static bool begin_done = false;
     if (!is_end) {
         begin_done = true;
-        begin_time = std::chrono::high_resolution_clock::now();
+        // begin_time = std::chrono::high_resolution_clock::now();
+        begin_time = std::clock();
     } else if (!begin_done) {
         printf("NOTE: begin time is not set, so elapsed time is not printed!\n");
     } else {
-        end_time = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end_time - begin_time;
-            // printf("%s Time elapsed: %fs\n\n", name, elapsed.count());
-        return elapsed.count()*1000;
+        // end_time = std::chrono::high_resolution_clock::now();
+        // std::chrono::duration<double> elapsed = end_time - begin_time;
+        // return elapsed.count()*1000;
+        end_time = std::clock();
+        return 1000.0 * (end_time - begin_time) / CLOCKS_PER_SEC;
     }
     return 0;
 }

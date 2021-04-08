@@ -1,0 +1,55 @@
+AdvertiseKeys completed!
+Threshold: 267, Total number: 400
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	1.116825ms	226.634790ms	4017.855808ms	0.467948ms	4246.075371ms
+Server	1.000000ms	27.345000ms	240.324000ms	173997.971000ms	174266.640000ms
+AdvertiseKeys completed!
+Threshold: 267, Total number: 400
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.822640ms	217.972297ms	3989.322333ms	0.489973ms	4208.607243ms
+Server	1.000000ms	27.040000ms	242.473000ms	173828.503000ms	174099.016000ms
+AdvertiseKeys completed!
+Threshold: 267, Total number: 400
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.818332ms	216.691803ms	3969.108794ms	0.477760ms	4187.096689ms
+Server	1.000000ms	26.683000ms	240.395000ms	173885.349000ms	174153.427000ms
+AdvertiseKeys completed!
+Threshold: 267, Total number: 400
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.818415ms	216.435595ms	3981.913350ms	0.469065ms	4199.636425ms
+Server	1.000000ms	26.667000ms	240.406000ms	173735.094000ms	174003.167000ms
+AdvertiseKeys completed!
+Threshold: 267, Total number: 400
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.820392ms	219.278270ms	4021.997750ms	0.474737ms	4242.571150ms
+Server	1.000000ms	26.586000ms	241.189000ms	175426.420000ms	175695.195000ms

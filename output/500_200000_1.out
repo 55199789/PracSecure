@@ -1,0 +1,66 @@
+AdvertiseKeys completed!
+Threshold: 334, Total number: 500
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.825316ms	302.475482ms	2399.297732ms	0.618078ms	2703.216608ms
+Server	1.000000ms	43.999000ms	142.879000ms	6123.105000ms	6310.983000ms
+AdvertiseKeys completed!
+Threshold: 334, Total number: 500
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.832534ms	293.467396ms	2336.325566ms	0.716022ms	2631.341518ms
+Server	1.000000ms	50.666000ms	170.703000ms	6155.431000ms	6377.800000ms
+AdvertiseKeys completed!
+Threshold: 334, Total number: 500
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.902804ms	283.367112ms	2194.975786ms	0.820816ms	2480.066518ms
+Server	1.000000ms	36.111000ms	151.012000ms	5930.986000ms	6119.109000ms
+AdvertiseKeys completed!
+Threshold: 334, Total number: 500
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.830452ms	282.632900ms	2191.173396ms	0.674964ms	2475.311712ms
+Server	1.000000ms	36.191000ms	134.132000ms	6047.833000ms	6219.156000ms
+AdvertiseKeys completed!
+Threshold: 334, Total number: 500
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.818270ms	283.509546ms	2187.978570ms	0.583248ms	2472.889634ms
+Server	1.000000ms	49.498000ms	133.726000ms	6109.966000ms	6294.190000ms
+AdvertiseKeys completed!
+Threshold: 334, Total number: 500
+ShareKeys completed!
+MaskedInputCollection completed!
+Unmasking validation completed!
+Recovering pu completed!
+Aggregation completed!
+Testing passed!
+	 AdvertiseKeys	 ShareKyes	 Masking	 Unmasking	 Total
+Client	0.957382ms	283.544598ms	2199.780288ms	0.574872ms	2484.857140ms
+Server	1.000000ms	36.139000ms	133.960000ms	5782.720000ms	5953.819000ms
